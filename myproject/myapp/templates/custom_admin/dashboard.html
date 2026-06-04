@@ -1,0 +1,77 @@
+{% extends 'custom_admin/base.html' %}
+
+{% block page_title %}Dashboard Overview{% endblock %}
+
+{% block content %}
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="glass-card p-4 text-center">
+            <div class="text-warning mb-2"><i class="fas fa-car fa-2x"></i></div>
+            <h3 class="fw-bold mb-0">{{ total_cars }}</h3>
+            <p class="text-muted mb-0">Total Fleet</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="glass-card p-4 text-center">
+            <div class="text-primary mb-2"><i class="fas fa-calendar-alt fa-2x"></i></div>
+            <h3 class="fw-bold mb-0">{{ total_bookings }}</h3>
+            <p class="text-muted mb-0">Total Bookings</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="glass-card p-4 text-center">
+            <div class="text-success mb-2"><i class="fas fa-check-circle fa-2x"></i></div>
+            <h3 class="fw-bold mb-0">{{ confirmed_bookings }}</h3>
+            <p class="text-muted mb-0">Confirmed Bookings</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="glass-card p-4 text-center">
+            <div class="text-danger mb-2"><i class="fas fa-clock fa-2x"></i></div>
+            <h3 class="fw-bold mb-0">{{ pending_bookings }}</h3>
+            <p class="text-muted mb-0">Pending Bookings</p>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="glass-card p-4">
+            <h5 class="fw-bold mb-4">Recent Bookings</h5>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Customer</th>
+                            <th>Car</th>
+                            <th>Pickup Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for booking in recent_bookings %}
+                        <tr>
+                            <td>#{{ booking.id }}</td>
+                            <td>{{ booking.user.username }}</td>
+                            <td class="fw-bold">{{ booking.car.name }}</td>
+                            <td>{{ booking.pickup_date }}</td>
+                            <td>
+                                <span class="badge {% if booking.status == 'Confirmed' %}bg-success{% elif booking.status == 'Pending' %}bg-warning text-dark{% else %}bg-secondary{% endif %}">
+                                    {{ booking.status }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="5" class="text-center">No recent bookings.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="text-end mt-3">
+                <a href="{% url 'custom_admin_bookings' %}" class="btn btn-sm btn-outline-secondary">View All Bookings</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopaholic | Premium E-Commerce Store</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+
+    <!-- Icons -->
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+
+    <script type="text/javascript">
+        var user = '{{request.user}}'
+
+        function getToken(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        var csrftoken = getToken('csrftoken');
+    </script>
+
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="{% url 'home' %}" class="logo">Shop<span>aholic</span></a>
+
+            <div class="nav-links">
+                <a href="{% url 'home' %}" class="{% if request.path == '/' %}active{% endif %}">Home</a>
+                <a href="#">Shop</a>
+                {% if request.user.is_authenticated %}
+                <a href="{% url 'order_history' %}" class="{% if request.path == '/order_history/' %}active{% endif %}">Order History</a>
+                {% endif %}
+            </div>
+
+            <div class="nav-icons">
+                {% if request.user.is_authenticated %}
+                <span class="user-greeting">Hi, {{request.user.username}}</span>
+                <a href="{% url 'logout' %}" class="btn-sm"
+                    style="border: 1px solid var(--secondary); color: var(--secondary);">Logout</a>
+                {% else %}
+                <a href="{% url 'login' %}" class="btn-sm">Login</a>
+                {% endif %}
+
+                <a href="{% url 'cart' %}" class="cart-btn">
+                    <div class="cart-icon-wrapper">
+                        <i class='bx bx-shopping-bag'></i>
+                        <span class="cart-count">{{cartItems}}</span>
+                    </div>
+                    <span class="cart-text">My Cart</span>
+                </a>
+
+                <button id="theme-toggle" class="theme-toggle-btn">
+                    <i class='bx bx-moon'></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <style>
+        .theme-toggle-btn {
+            background: none;
+            border: none;
+            color: var(--text-main);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .theme-toggle-btn:hover {
+            color: var(--primary);
+        }
+
+        /* Force Navbar Visibility in Light Mode */
+        [data-theme='light'] .navbar {
+            background: rgba(255, 255, 255, 0.98) !important;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+        [data-theme='light'] .logo {
+            color: #212529 !important;
+        }
+        [data-theme='light'] .nav-links a {
+            color: #4a4a4a !important;
+        }
+        [data-theme='light'] .nav-links a.active {
+            color: var(--primary) !important;
+        }
+    </style>
+
+    <div class="container">
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+        {% endif %}
+
+        {% block content %}
+        {% endblock content %}
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Shopaholic. All rights reserved.</p>
+    </footer>
+
+    <script src="{% static 'js/cart.js' %}"></script>
+    <script>
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = themeToggle.querySelector('i');
+        const html = document.documentElement;
+
+        // Check for saved theme
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        html.setAttribute('data-theme', savedTheme);
+        updateIcon(savedTheme);
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateIcon(newTheme);
+        });
+
+        function updateIcon(theme) {
+            if (theme === 'light') {
+                themeIcon.classList.replace('bx-moon', 'bx-sun');
+            } else {
+                themeIcon.classList.replace('bx-sun', 'bx-moon');
+            }
+        }
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+
+</html>

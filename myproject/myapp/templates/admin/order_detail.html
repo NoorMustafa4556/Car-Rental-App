@@ -1,0 +1,86 @@
+{% extends 'admin/admin_base.html' %}
+
+{% block content %}
+<div class="box-element">
+    <div style="display:flex; justify-content:flex-end; align-items:center; margin-bottom:1.5rem;">
+        <a href="{% url 'admin_orders' %}" class="btn-sm" style="display:inline-flex; align-items:center; gap:5px; text-decoration:none;">
+            <i class='bx bx-arrow-back'></i> Back to Orders
+        </a>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+        <div class="card" style="padding: 1.5rem; background: var(--surface-color); border: 1px solid var(--glass-border);">
+            <h4 style="color: var(--primary); margin-bottom: 1rem;">Customer Information</h4>
+            <p><strong>Name:</strong> {{ order.customer.name }}</p>
+            <p><strong>Email:</strong> {{ order.customer.email }}</p>
+            <p><strong>Date Ordered:</strong> {{ order.date_ordered|date:"M d, Y H:i" }}</p>
+            <p><strong>Status:</strong> 
+                <span class="badge {% if order.status == 'Pending' %}badge-warning{% elif order.status == 'Approved' %}badge-success{% elif order.status == 'Rejected' %}badge-danger{% else %}badge-info{% endif %}">
+                    {{ order.status }}
+                </span>
+            </p>
+        </div>
+
+        <div class="card" style="padding: 1.5rem; background: var(--surface-color); border: 1px solid var(--glass-border);">
+            <h4 style="color: var(--primary); margin-bottom: 1rem;">Shipping Address</h4>
+            {% if shipping %}
+                <p><strong>Address:</strong> {{ shipping.address }}</p>
+                <p><strong>City:</strong> {{ shipping.city }}</p>
+                <p><strong>State:</strong> {{ shipping.state }}</p>
+                <p><strong>Zipcode:</strong> {{ shipping.zipcode }}</p>
+            {% else %}
+                <p>No shipping information available.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <h4 style="margin-bottom: 1rem;">Order Items</h4>
+    <table>
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        {% if item.product.image %}
+                        <img src="{{ item.product.image.url }}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;">
+                        {% endif %}
+                        {{ item.product.name }}
+                    </div>
+                </td>
+                <td>Rs. {{ item.product.price|floatformat:0 }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>Rs. {{ item.get_total|floatformat:0 }}</td>
+            </tr>
+            {% endfor %}
+            <tr style="border-top: 2px solid var(--glass-border); font-weight: bold;">
+                <td colspan="3" style="text-align: right;">Grand Total:</td>
+                <td style="color: var(--primary); font-size: 1.2rem;">Rs. {{ order.get_cart_total|floatformat:0 }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div style="margin-top: 2rem; padding: 1.5rem; background: var(--glass-bg); border-radius: 8px;">
+        <h4 style="margin-bottom: 1rem;">Update Order Status</h4>
+        <form method="POST" action="{% url 'update_order_status' order.id %}" style="display: flex; gap: 15px; align-items: center;">
+            {% csrf_token %}
+            <select name="status" class="form-control" style="width: 200px;">
+                <option value="Pending" {% if order.status == 'Pending' %}selected{% endif %}>Pending</option>
+                <option value="Approved" {% if order.status == 'Approved' %}selected{% endif %}>Approved</option>
+                <option value="Processing" {% if order.status == 'Processing' %}selected{% endif %}>Processing</option>
+                <option value="Shipped" {% if order.status == 'Shipped' %}selected{% endif %}>Shipped</option>
+                <option value="Delivered" {% if order.status == 'Delivered' %}selected{% endif %}>Delivered</option>
+                <option value="Rejected" {% if order.status == 'Rejected' %}selected{% endif %}>Rejected</option>
+            </select>
+            <button type="submit" class="btn-primary" style="width: auto; padding: 0.8rem 2rem;">Update Status</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

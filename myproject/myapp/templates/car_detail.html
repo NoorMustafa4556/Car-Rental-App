@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row" data-aos="fade-in">
+    <!-- Car Details -->
+    <div class="col-lg-7 mb-5 mb-lg-0">
+        <div class="glass-card p-4 h-100">
+            <div class="rounded-4 overflow-hidden shadow-lg mb-4 position-relative" style="height: 400px;">
+                {% if car.image %}
+                    <img src="{{ car.image.url }}" class="w-100 h-100 object-fit-cover" alt="{{ car.name }}">
+                {% else %}
+                    <div class="w-100 h-100 bg-dark d-flex align-items-center justify-content-center">
+                        <h4 class="text-muted">Vehicle Image Unavailable</h4>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="d-flex justify-content-between align-items-end mb-3">
+                <h1 class="fw-bold display-5 mb-0">{{ car.name }}</h1>
+                <h3 class="text-gradient fw-bold mb-1">${{ car.rate_per_day }} <span class="fs-5 text-muted fw-normal">/ day</span></h3>
+            </div>
+            <div class="bg-secondary opacity-25 w-100 mb-4" style="height: 1px;"></div>
+            
+            <h5 class="fw-bold text-warning mb-3">Vehicle Overview</h5>
+            <p class="text-light opacity-75 lh-lg mb-4">{{ car.description|default:"Experience the thrill of driving this premium vehicle. Designed for comfort and performance." }}</p>
+            
+            <h5 class="fw-bold text-warning mb-3">Premium Features</h5>
+            <div class="d-flex flex-wrap gap-2">
+                {% for feature in car.features|default:"Air Conditioning, Bluetooth, Leather Seats"|make_list|join:""|slice:":"|stringformat:"s" %}
+                    <!-- We just display the raw text beautifully -->
+                {% endfor %}
+                <span class="badge bg-dark border border-secondary px-3 py-2 fs-6 text-light opacity-75">{{ car.features }}</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Booking Form -->
+    <div class="col-lg-5" data-aos="fade-left" data-aos-delay="200">
+        <div class="glass-card p-5 sticky-top" style="top: 120px;">
+            <div class="text-center mb-4">
+                <h3 class="fw-bold">Reserve Your <span class="text-gradient">Ride</span></h3>
+                <p class="text-muted small">Fill out the details below to confirm your booking.</p>
+            </div>
+            
+            <form method="POST">
+                {% csrf_token %}
+                <div class="mb-4">
+                    <label class="form-label text-warning small fw-bold text-uppercase tracking-wider">Pickup Location</label>
+                    <input type="text" name="pickup_location" class="form-control form-control-lg" required placeholder="Where should we deliver it?">
+                </div>
+                <div class="mb-4">
+                    <label class="form-label text-warning small fw-bold text-uppercase tracking-wider">Drop Location</label>
+                    <input type="text" name="drop_location" class="form-control form-control-lg" required placeholder="Where will you return it?">
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label text-warning small fw-bold text-uppercase tracking-wider">Pickup Date</label>
+                        <input type="date" name="pickup_date" class="form-control form-control-lg" required>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label text-warning small fw-bold text-uppercase tracking-wider">Drop Date</label>
+                        <input type="date" name="drop_date" class="form-control form-control-lg" required>
+                    </div>
+                </div>
+                
+                {% if user.is_authenticated %}
+                    <button type="submit" class="btn-lavish w-100 py-3 fs-5 mt-2 shadow-lg">Confirm Reservation</button>
+                {% else %}
+                    <div class="alert alert-dark border-warning border-opacity-25 mt-3 text-center">
+                        <p class="mb-3">You must be signed in to reserve this vehicle.</p>
+                        <a href="{% url 'login' %}?next={{ request.path }}" class="btn-outline-lavish text-decoration-none d-block">Sign In Now</a>
+                    </div>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

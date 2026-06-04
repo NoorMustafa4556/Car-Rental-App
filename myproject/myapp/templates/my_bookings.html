@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row" data-aos="fade-up">
+    <div class="col-12 mb-4 text-center">
+        <h2 class="display-6 fw-bold mb-2">My <span class="text-gradient">Reservations</span></h2>
+        <div class="mx-auto bg-gradient mb-4" style="height: 3px; width: 60px; background: linear-gradient(90deg, #f59e0b, transparent); border-radius: 2px;"></div>
+    </div>
+    
+    <div class="col-12">
+        {% if bookings %}
+        <div class="glass-card overflow-hidden">
+            <div class="table-responsive">
+                <table class="table table-dark-glass table-hover mb-0 align-middle">
+                    <thead class="text-uppercase small tracking-wider">
+                        <tr>
+                            <th class="py-4 px-4">ID</th>
+                            <th class="py-4">Vehicle</th>
+                            <th class="py-4">Pickup Info</th>
+                            <th class="py-4">Return Info</th>
+                            <th class="py-4">Total</th>
+                            <th class="py-4 text-center">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for booking in bookings %}
+                        <tr style="transition: all 0.3s;" onmouseover="this.style.backgroundColor='rgba(255,255,255,0.05)'" onmouseout="this.style.backgroundColor='transparent'">
+                            <td class="px-4 text-muted">#{{ booking.id }}</td>
+                            <td class="fw-bold fs-5 text-light">{{ booking.car.name }}</td>
+                            <td>
+                                <div class="fw-semibold text-warning">{{ booking.pickup_date }}</div>
+                                <small class="text-muted opacity-75">{{ booking.pickup_location }}</small>
+                            </td>
+                            <td>
+                                <div class="fw-semibold text-warning">{{ booking.drop_date }}</div>
+                                <small class="text-muted opacity-75">{{ booking.drop_location }}</small>
+                            </td>
+                            <td class="fw-bold text-gradient fs-5">${{ booking.total_amount }}</td>
+                            <td class="text-center">
+                                {% if booking.status == 'Confirmed' %}
+                                    <span class="badge bg-success bg-opacity-25 text-success border border-success px-3 py-2 rounded-pill shadow-sm">Confirmed</span>
+                                {% elif booking.status == 'Pending' %}
+                                    <span class="badge bg-warning bg-opacity-25 text-warning border border-warning px-3 py-2 rounded-pill shadow-sm">Pending</span>
+                                {% else %}
+                                    <span class="badge bg-secondary bg-opacity-25 text-light border border-secondary px-3 py-2 rounded-pill shadow-sm">{{ booking.status }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% else %}
+        <div class="glass-card p-5 text-center" data-aos="zoom-in">
+            <div class="mb-4">
+                <i class="fs-1 text-warning opacity-50">🚗</i>
+            </div>
+            <h3 class="fw-bold mb-3">No Reservations Yet</h3>
+            <p class="text-muted mb-4">You haven't booked any of our premium vehicles yet.</p>
+            <a href="{% url 'home' %}#fleet" class="btn-lavish text-decoration-none px-4 py-2">Explore Fleet</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

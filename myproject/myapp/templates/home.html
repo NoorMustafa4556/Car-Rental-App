@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="row align-items-center mb-5 pb-4" data-aos="fade-up">
+    <div class="col-lg-6 text-center text-lg-start mb-5 mb-lg-0">
+        <h1 class="display-3 fw-bold mb-3">Experience <span class="text-gradient">Luxury</span> On Your Terms.</h1>
+        <p class="lead text-muted mb-4">Drive the most exclusive vehicles with our premium rental service. Elevate your journey today.</p>
+        <a href="#fleet" class="btn-lavish text-decoration-none fs-5 px-4 py-3">Explore Fleet</a>
+    </div>
+    <div class="col-lg-6">
+        <div class="position-relative">
+            <div class="position-absolute top-50 start-50 translate-middle w-100 h-100 rounded-circle" style="background: radial-gradient(circle, rgba(245,158,11,0.2) 0%, rgba(15,23,42,0) 70%); z-index: -1;"></div>
+            <img src="https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?auto=format&fit=crop&q=80&w=1000" class="img-fluid rounded-4 shadow-lg" alt="Luxury Car" style="transform: perspective(1000px) rotateY(-10deg); transition: transform 0.5s;" onmouseover="this.style.transform='perspective(1000px) rotateY(0deg)'" onmouseout="this.style.transform='perspective(1000px) rotateY(-10deg)'">
+        </div>
+    </div>
+</div>
+
+<!-- Fleet Section -->
+<div id="fleet" class="row mb-5 text-center" data-aos="fade-up" data-aos-delay="200">
+    <div class="col-12">
+        <h2 class="display-5 fw-bold mb-2">Our <span class="text-gradient">Premium Fleet</span></h2>
+        <div class="mx-auto bg-gradient" style="height: 4px; width: 80px; background: linear-gradient(90deg, #f59e0b, transparent); border-radius: 2px;"></div>
+    </div>
+</div>
+
+<div class="row g-5">
+    {% for car in cars %}
+    <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:1 }}00">
+        <div class="glass-card h-100 d-flex flex-column overflow-hidden">
+            <div class="position-relative overflow-hidden" style="height: 240px;">
+                {% if car.image %}
+                    <img src="{{ car.image.url }}" class="w-100 h-100 object-fit-cover" alt="{{ car.name }}" style="transition: transform 0.5s; cursor: pointer;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                {% else %}
+                    <div class="w-100 h-100 bg-dark d-flex align-items-center justify-content-center">
+                        <i class="text-muted">No Image</i>
+                    </div>
+                {% endif %}
+                <div class="position-absolute top-0 end-0 m-3">
+                    <span class="badge bg-warning text-dark px-3 py-2 rounded-pill shadow">Premium</span>
+                </div>
+            </div>
+            
+            <div class="card-body p-4 d-flex flex-column">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="fw-bold mb-0">{{ car.name }}</h4>
+                    <span class="fs-5 fw-bold text-gradient">${{ car.rate_per_day }}<span class="fs-6 text-muted fw-normal">/d</span></span>
+                </div>
+                
+                <p class="text-muted small mb-4 flex-grow-1">{{ car.features }}</p>
+                
+                <a href="{% url 'car_detail' car.id %}" class="btn-outline-lavish text-center text-decoration-none w-100 py-2 d-block">Reserve Now</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center py-5" data-aos="fade-in">
+        <div class="glass-card p-5 d-inline-block">
+            <h3 class="text-muted mb-0">No premium vehicles currently available.</h3>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
